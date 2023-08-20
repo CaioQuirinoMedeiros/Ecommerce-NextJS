@@ -7,7 +7,7 @@
       "warn",
       {
         "newlinesBetween": "always",
-        "groups": ["module", ["/^@/", "parent"], ["sibling", "index"]],
+        "groups": ["module", ["/^@\//", "parent"], ["sibling", "index"]],
         "alphabetize": { "ignoreCase": true }
       }
     ]
