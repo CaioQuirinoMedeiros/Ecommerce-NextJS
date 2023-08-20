@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { useStoreModalStore } from '@/hoos/use-store-modal-store'
+import { useStoreModalStore } from '@/hooks/use-store-modal-store'
 
 export function RootPageClient() {
   const onOpen = useStoreModalStore((state) => state.onOpen)

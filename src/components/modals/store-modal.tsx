@@ -1,10 +1,12 @@
 'use client'
 
+import * as React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
 
-import { useStoreModalStore } from '@/hoos/use-store-modal-store'
+import { useStoreModalStore } from '@/hooks/use-store-modal-store'
 import { Modal } from '@/components/ui/modal'
 import {
   Form,
@@ -26,6 +28,8 @@ type StoreModalFormData = z.input<typeof storeModalFormSchema>
 export function StoreModal() {
   const storeModalStore = useStoreModalStore()
 
+  const [isSubmiting, setIsSubmiting] = React.useState(false)
+
   const form = useForm<StoreModalFormData>({
     defaultValues: { name: '' },
     resolver: zodResolver(storeModalFormSchema)
@@ -33,6 +37,14 @@ export function StoreModal() {
 
   async function onSubmit(formData: StoreModalFormData) {
     console.log(formData)
+    try {
+      setIsSubmiting(true)
+      const response = await axios.post('/api/stores', { name: formData.name })
+      console.log(response.data)
+    } catch {
+    } finally {
+      setIsSubmiting(false)
+    }
   }
 
   return (
@@ -53,7 +65,11 @@ export function StoreModal() {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder='E-Commerce' {...field} />
+                      <Input
+                        disabled={isSubmiting}
+                        placeholder='E-Commerce'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage>
                       {form.formState.errors?.name?.message}
@@ -67,10 +83,13 @@ export function StoreModal() {
                   type='button'
                   variant='outline'
                   onClick={storeModalStore.onClose}
+                  disabled={isSubmiting}
                 >
                   Cancel
                 </Button>
-                <Button type='submit'>Continue</Button>
+                <Button type='submit' disabled={isSubmiting}>
+                  Continue
+                </Button>
               </div>
             </form>
           </Form>
