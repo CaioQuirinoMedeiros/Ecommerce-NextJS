@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
+import { toast } from 'react-hot-toast'
 
 import { useStoreModalStore } from '@/hooks/use-store-modal-store'
 import { Modal } from '@/components/ui/modal'
@@ -18,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { handleAxiosError } from '@/utils/handleAxiosError'
 
 const storeModalFormSchema = z.object({
   name: z.string().min(1)
@@ -39,9 +41,10 @@ export function StoreModal() {
     console.log(formData)
     try {
       setIsSubmiting(true)
-      const response = await axios.post('/api/stores', { name: formData.name })
-      console.log(response.data)
-    } catch {
+      await axios.post('/api/stores', { name: formData.name })
+      toast.success("Store created")
+    } catch (error: any) {
+      toast.error(handleAxiosError(error).message)
     } finally {
       setIsSubmiting(false)
     }
