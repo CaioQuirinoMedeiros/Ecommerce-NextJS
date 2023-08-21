@@ -27,6 +27,10 @@ const storeModalFormSchema = z.object({
 
 type StoreModalFormData = z.input<typeof storeModalFormSchema>
 
+type CreateStoreResponseBody = {
+  store: { id: string }
+}
+
 export function StoreModal() {
   const storeModalStore = useStoreModalStore()
 
@@ -38,11 +42,13 @@ export function StoreModal() {
   })
 
   async function onSubmit(formData: StoreModalFormData) {
-    console.log(formData)
     try {
       setIsSubmiting(true)
-      await axios.post('/api/stores', { name: formData.name })
-      toast.success("Store created")
+      const response = await axios.post<CreateStoreResponseBody>(
+        '/api/stores',
+        { name: formData.name }
+      )
+      window.location.assign(`/${response.data.store.id}`)
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
     } finally {
