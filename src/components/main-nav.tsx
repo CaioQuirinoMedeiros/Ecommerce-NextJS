@@ -8,7 +8,6 @@ import { cn } from '@/utils/styles'
 type Route = {
   href: string
   label: string
-  isActive: boolean
 }
 
 interface MainNavProps extends React.HTMLAttributes<HTMLElement> {}
@@ -19,31 +18,31 @@ export function MainNav(props: MainNavProps) {
   const pathname = usePathname()
   const params = useParams()
 
-  const settingsHref = `/${params.storeId}/settings`
-
   const routes: Route[] = [
     {
-      href: settingsHref,
-      label: 'Settings',
-      isActive: pathname === settingsHref
+      href: `/${params.storeId}`,
+      label: 'Overview'
+    },
+    {
+      href: `/${params.storeId}/settings`,
+      label: 'Settings'
     }
   ]
 
   return (
     <nav
       {...rest}
-      className={cn('flex items-center space-4 lg:space-6', className)}
+      className={cn('flex items-center gap-4 lg:gap-6', className)}
     >
       {routes.map((route) => {
+        const isActive = route.href === pathname
         return (
           <Link
             key={route.href}
             href={route.href}
             className={cn(
               'text-sm font-medium transition-colors hover:text-primary  active:text-black dark:active:text-white',
-              route.isActive
-                ? 'text-back dark:text-white'
-                : 'text-muted-foreground'
+              isActive ? 'text-back dark:text-white' : 'text-muted-foreground'
             )}
           >
             {route.label}
