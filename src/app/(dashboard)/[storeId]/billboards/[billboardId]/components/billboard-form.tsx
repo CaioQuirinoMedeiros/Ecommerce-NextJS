@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Store } from '@prisma/client'
+import { Billboard } from '@prisma/client'
 import { Trash } from 'lucide-react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -24,41 +24,51 @@ import {
 import { Input } from '@/components/ui/input'
 import { handleAxiosError } from '@/utils/handleAxiosError'
 import { AlertModal } from '@/components/modals/alert-modal'
-import { ApiAlert } from '@/components/ui/api-alert'
-import { useOrigin } from '@/hooks/use-origin'
+import { ImageUpload } from '@/components/ui/image-upload'
 
-interface SettingsFormsProps {
-  initialData: Store
+interface BillboardFormsProps {
+  initialData: Billboard | null
 }
 
 const storeFormSchema = z.object({
-  name: z.string().min(1)
+  label: z.string().min(1),
+  imageUrl: z.string().min(1)
 })
 
 type StoreFormData = z.input<typeof storeFormSchema>
 
-export function SettingsForm(props: SettingsFormsProps) {
+export function BillboardForm(props: BillboardFormsProps) {
   const { initialData } = props
 
-  const origin = useOrigin()
   const params = useParams()
   const router = useRouter()
   const form = useForm<StoreFormData>({
-    defaultValues: initialData,
+    defaultValues: {
+      label: initialData?.label ?? '',
+      imageUrl: initialData?.imageUrl ?? ''
+    },
     resolver: zodResolver(storeFormSchema)
   })
+
+  const storeId = params.storeId as string
+  const billboardId = params.billboardId as string
 
   const [isSubmiting, setIsSubmiting] = React.useState(false)
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [isAlertOpen, setIsAlertOpen] = React.useState(false)
 
+  const title = initialData ? 'Edit Billboard' : 'Create Billboard'
+  const description = initialData ? 'Edit a Billboard' : 'Add a new Billboard'
+  const toastMessage = initialData ? 'Billboard updated.' : 'Billboard created.'
+  const action = initialData ? 'Save changes' : 'Create'
+
   async function deleteStore() {
     try {
       setIsDeleting(true)
-      await axios.delete(`/api/stores/${params.storeId}`)
+      await axios.delete(`/api/${storeId}/billboards/${billboardId}`)
       router.refresh()
       router.push('/')
-      toast.success('Store deleted')
+      toast.success('Billboard deleted')
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
     } finally {
@@ -70,15 +80,27 @@ export function SettingsForm(props: SettingsFormsProps) {
     setIsAlertOpen(true)
   }
 
+  console.log('OIE')
+
   async function onSubmit(formData: StoreFormData) {
     try {
       setIsSubmiting(true)
 
-      await axios.patch(`/api/stores/${params.storeId}`, {
-        name: formData.name
-      })
+      if (initialData) {
+        await axios.patch(`/api/${storeId}/billboards/${billboardId}`, {
+          label: formData.label,
+          imageUrl: formData.imageUrl
+        })
+      } else {
+        await axios.post(`/api/${storeId}/billboards`, {
+          label: formData.label,
+          imageUrl: formData.imageUrl
+        })
+      }
 
       router.refresh()
+      router.push(`/${storeId}/billboards`)
+      toast.success(toastMessage)
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
     } finally {
@@ -89,15 +111,17 @@ export function SettingsForm(props: SettingsFormsProps) {
   return (
     <>
       <div className='flex items-center justify-between'>
-        <Heading title='Settings' description='Manage store preferences' />
-        <Button
-          variant='destructive'
-          size='icon'
-          onClick={handleRemoveStore}
-          disabled={isSubmiting}
-        >
-          <Trash className='h-4 w-4' />
-        </Button>
+        <Heading title={title} description={description} />
+        {!!initialData && (
+          <Button
+            variant='destructive'
+            size='icon'
+            onClick={handleRemoveStore}
+            disabled={isSubmiting}
+          >
+            <Trash className='h-4 w-4' />
+          </Button>
+        )}
       </div>
 
       <Separator />
@@ -107,17 +131,36 @@ export function SettingsForm(props: SettingsFormsProps) {
           onSubmit={form.handleSubmit(onSubmit)}
           className='space-y-8 w-full'
         >
+          <FormField
+            control={form.control}
+            name='imageUrl'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Background Image</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    value={field.value ? [field.value] : []}
+                    onChange={(imageUrl) => field.onChange(imageUrl)}
+                    onRemove={() => field.onChange('')}
+                    disabled={isSubmiting}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className='grid grid-cols-3 gap-8'>
             <FormField
               control={form.control}
-              name='name'
+              name='label'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Label</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmiting}
-                      placeholder='Store name'
+                      placeholder='Billboard label'
                       {...field}
                     />
                   </FormControl>
@@ -127,18 +170,12 @@ export function SettingsForm(props: SettingsFormsProps) {
             />
           </div>
           <Button disabled={isSubmiting} className='ml-auto' type='submit'>
-            Save changes
+            {action}
           </Button>
         </form>
       </Form>
 
       <Separator />
-
-      <ApiAlert
-        title='NEXT_PUBLIC_API_URL'
-        description={`${origin}/api/${params.storeId}`}
-        variant='public'
-      />
 
       <AlertModal
         isOpen={isAlertOpen}

@@ -8,7 +8,7 @@ import { handleRouteError } from '@/utils/handleRouteError'
 
 interface StoreRouteProps {
   params: { storeId: string }
-  searchParams?: {}
+  searchParams?: Record<string, string>
 }
 
 const updateStoreBodySchema = z.object({
@@ -23,10 +23,6 @@ export async function PATCH(request: NextRequest, { params }: StoreRouteProps) {
       throw new AppError({ statusCode: 401, message: 'Not authenticated' })
     }
 
-    if (!params.storeId) {
-      throw new AppError({ message: 'Store id is required' })
-    }
-
     const body = await request.json()
 
     const { name } = updateStoreBodySchema.parse(body)
@@ -36,7 +32,7 @@ export async function PATCH(request: NextRequest, { params }: StoreRouteProps) {
       data: { name: name }
     })
 
-    return NextResponse.json({ store }, { status: 200 })
+    return NextResponse.json({ store })
   } catch (error: any) {
     return handleRouteError(error)
   }
@@ -53,15 +49,11 @@ export async function DELETE(
       throw new AppError({ statusCode: 401, message: 'Not authenticated' })
     }
 
-    if (!params.storeId) {
-      throw new AppError({ message: 'Store id is required' })
-    }
-
     const store = await prismadb.store.delete({
       where: { id: params.storeId, userId: userId }
     })
 
-    return NextResponse.json({ store }, { status: 200 })
+    return NextResponse.json({ store })
   } catch (error: any) {
     return handleRouteError(error)
   }

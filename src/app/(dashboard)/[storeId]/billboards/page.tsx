@@ -3,14 +3,14 @@ import { redirect } from 'next/navigation'
 
 import { prismadb } from '@/lib/prismadb'
 
-import { SettingsForm } from './components/settings-form'
+import { BillboardsClient } from './components/billboards-client'
 
-interface SettingsPageProps {
+interface BillboardsPageProps {
   params: { storeId: string }
   searchParams?: Record<string, string>
 }
 
-export default async function SettingsPage(props: SettingsPageProps) {
+export default async function BillboardsPage(props: BillboardsPageProps) {
   const { params } = props
 
   const { userId } = auth()
@@ -19,17 +19,18 @@ export default async function SettingsPage(props: SettingsPageProps) {
     redirect('/sign-in')
   }
 
-  const store = await prismadb.store.findFirstOrThrow({
-    where: {
-      id: params.storeId,
-      userId: userId
-    }
+  await prismadb.store.findUniqueOrThrow({
+    where: { userId: userId, id: params.storeId }
+  })
+
+  const billboards = await prismadb.billboard.findMany({
+    where: { storeId: params.storeId }
   })
 
   return (
     <div className='flex-col'>
       <div className='flex-1 space-y-4 p-8 pt-6'>
-        <SettingsForm initialData={store} />
+        <BillboardsClient billboards={billboards} />
       </div>
     </div>
   )

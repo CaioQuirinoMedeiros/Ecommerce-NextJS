@@ -26,6 +26,10 @@ export function MainNav(props: MainNavProps) {
     {
       href: `/${params.storeId}/settings`,
       label: 'Settings'
+    },
+    {
+      href: `/${params.storeId}/billboards`,
+      label: 'Billboards'
     }
   ]
 

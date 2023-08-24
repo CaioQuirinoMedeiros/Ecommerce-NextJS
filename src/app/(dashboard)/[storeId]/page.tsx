@@ -2,7 +2,7 @@ import { prismadb } from '@/lib/prismadb'
 
 interface DashboardPageProps {
   params: { storeId: string }
-  searchParams?: {}
+  searchParams?: Record<string, string>
 }
 
 export default async function DashboardPage(props: DashboardPageProps) {
