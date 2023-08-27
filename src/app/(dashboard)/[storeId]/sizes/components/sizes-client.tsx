@@ -9,28 +9,28 @@ import { Separator } from '@/components/ui/separator'
 import { DataTable } from '@/components/ui/data-table'
 import { ApiList } from '@/components/ui/api-list'
 
-import { CategoryItem, categoriesColumns } from './categories-columns'
+import { SizeItem, sizesColumns } from './sizes-columns'
 
-interface CategoriesClientProps {
-  categoriesItems: CategoryItem[]
+interface SizesClientProps {
+  sizesItems: SizeItem[]
 }
 
-export function CategoriesClient(props: CategoriesClientProps) {
-  const { categoriesItems } = props
+export function SizesClient(props: SizesClientProps) {
+  const { sizesItems } = props
 
   const router = useRouter()
   const params = useParams()
 
   function handleAddNewBillboard() {
-    router.push(`/${params.storeId}/categories/new`)
+    router.push(`/${params.storeId}/sizes/new`)
   }
 
   return (
     <>
       <div className='flex items-center justify-between'>
         <Heading
-          title={`Categories (${categoriesItems.length})`}
-          description='Manage categories for your store'
+          title={`Sizes (${sizesItems.length})`}
+          description='Manage sizes for your store'
         />
 
         <Button onClick={handleAddNewBillboard}>
@@ -42,14 +42,14 @@ export function CategoriesClient(props: CategoriesClientProps) {
       <Separator />
 
       <DataTable
-        data={categoriesItems}
-        columns={categoriesColumns}
+        data={sizesItems}
+        columns={sizesColumns}
         searchKey='name'
       />
 
-      <Heading title='API' description='API calls for Categories' />
+      <Heading title='API' description='API calls for Sizes' />
       <Separator />
-      <ApiList entityName='categories' entityIdName='categoryId' />
+      <ApiList entityName='sizes' entityIdName='sizeId' />
     </>
   )
 }
