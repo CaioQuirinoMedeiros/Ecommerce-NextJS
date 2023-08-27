@@ -22,8 +22,8 @@ const variantTextMap: Record<Variant, string> = {
 }
 
 const variantVariantMap: Record<Variant, BadgeProps['variant']> = {
-  admin: 'secondary',
-  public: 'destructive'
+  public: 'secondary',
+  admin: 'destructive'
 }
 
 export function ApiAlert(props: ApiAlertProps) {

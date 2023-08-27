@@ -17,39 +17,39 @@ import { Button } from '@/components/ui/button'
 import { handleAxiosError } from '@/utils/handleAxiosError'
 import { AlertModal } from '@/components/modals/alert-modal'
 
-import { BillboardItem } from './billboards-columns'
+import { CategoryItem } from './categories-columns'
 
-interface BillboardCellActionProps {
-  data: BillboardItem
+interface CategoryCellActionProps {
+  data: CategoryItem
 }
 
-export function BillboardCellAction(props: BillboardCellActionProps) {
+export function CategoryCellAction(props: CategoryCellActionProps) {
   const { data } = props
 
   const router = useRouter()
   const params = useParams()
 
   const storeId = params.storeId
-  const billboardId = data.id
+  const categoryId = data.id
 
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [isAlertOpen, setIsAlertOpen] = React.useState(false)
 
   function handleCopyId() {
-    navigator.clipboard.writeText(billboardId)
-    toast.success('Billboard ID copied to clipboard.')
+    navigator.clipboard.writeText(categoryId)
+    toast.success('Category ID copied to clipboard.')
   }
 
   function handleUpdate() {
-    router.push(`/${storeId}/billboards/${billboardId}`)
+    router.push(`/${storeId}/categories/${categoryId}`)
   }
 
-  async function deleteBillboard() {
+  async function deleteCategory() {
     try {
       setIsDeleting(true)
-      await axios.delete(`/api/${storeId}/billboards/${billboardId}`)
+      await axios.delete(`/api/${storeId}/categories/${categoryId}`)
       router.refresh()
-      toast.success('Billboard deleted')
+      toast.success('Category deleted')
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
     } finally {
@@ -91,7 +91,7 @@ export function BillboardCellAction(props: BillboardCellActionProps) {
         isLoading={isDeleting}
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
-        onConfirm={deleteBillboard}
+        onConfirm={deleteCategory}
       />
     </>
   )

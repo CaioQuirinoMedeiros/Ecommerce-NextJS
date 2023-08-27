@@ -26,7 +26,8 @@ export default async function BillboardsPage(props: BillboardsPageProps) {
   })
 
   const billboards = await prismadb.billboard.findMany({
-    where: { storeId: params.storeId }
+    where: { storeId: params.storeId },
+    orderBy: { createdAt: 'desc' }
   })
 
   const billboardsItems: BillboardItem[] = billboards.map((billboard) => ({

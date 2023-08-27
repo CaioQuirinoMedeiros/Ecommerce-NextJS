@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Billboard } from '@prisma/client'
+import { Billboard, Category } from '@prisma/client'
 import { Trash } from 'lucide-react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -24,51 +24,58 @@ import {
 import { Input } from '@/components/ui/input'
 import { handleAxiosError } from '@/utils/handleAxiosError'
 import { AlertModal } from '@/components/modals/alert-modal'
-import { ImageUpload } from '@/components/ui/image-upload'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
-interface BillboardFormsProps {
-  initialData: Billboard | null
+interface CategoryFormsProps {
+  initialData: Category | null
+  billboards: Billboard[]
 }
 
-const billboardFormSchema = z.object({
-  label: z.string().min(1),
-  imageUrl: z.string().min(1, { message: 'You should upload an image' })
+const categoryFormSchema = z.object({
+  name: z.string().min(1),
+  billboardId: z.string().min(1)
 })
 
-type BillboardFormData = z.input<typeof billboardFormSchema>
+type CategoryFormDaa = z.input<typeof categoryFormSchema>
 
-export function BillboardForm(props: BillboardFormsProps) {
-  const { initialData } = props
+export function CategoryForm(props: CategoryFormsProps) {
+  const { initialData, billboards } = props
 
   const params = useParams()
   const router = useRouter()
-  const form = useForm<BillboardFormData>({
+  const form = useForm<CategoryFormDaa>({
     defaultValues: {
-      label: initialData?.label ?? '',
-      imageUrl: initialData?.imageUrl ?? ''
+      name: initialData?.name ?? '',
+      billboardId: initialData?.billboardId ?? ''
     },
-    resolver: zodResolver(billboardFormSchema)
+    resolver: zodResolver(categoryFormSchema)
   })
 
   const storeId = params.storeId as string
-  const billboardId = params.billboardId as string
+  const categoryId = params.categoryId as string
 
   const [isSubmiting, setIsSubmiting] = React.useState(false)
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [isAlertOpen, setIsAlertOpen] = React.useState(false)
 
-  const title = initialData ? 'Edit Billboard' : 'Create Billboard'
-  const description = initialData ? 'Edit a Billboard' : 'Add a new Billboard'
-  const toastMessage = initialData ? 'Billboard updated.' : 'Billboard created.'
+  const title = initialData ? 'Edit Category' : 'Create Category'
+  const description = initialData ? 'Edit a Category' : 'Add a new Category'
+  const toastMessage = initialData ? 'Category updated.' : 'Category created.'
   const action = initialData ? 'Save changes' : 'Create'
 
-  async function deleteBillboard() {
+  async function deleteCategory() {
     try {
       setIsDeleting(true)
-      await axios.delete(`/api/${storeId}/billboards/${billboardId}`)
+      await axios.delete(`/api/${storeId}/categories/${categoryId}`)
       router.refresh()
-      router.push(`/${storeId}/billboards`)
-      toast.success('Billboard deleted')
+      router.push(`/${storeId}/categories`)
+      toast.success('Category deleted')
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
     } finally {
@@ -80,24 +87,24 @@ export function BillboardForm(props: BillboardFormsProps) {
     setIsAlertOpen(true)
   }
 
-  async function onSubmit(formData: BillboardFormData) {
+  async function onSubmit(formData: CategoryFormDaa) {
     try {
       setIsSubmiting(true)
 
       if (initialData) {
-        await axios.patch(`/api/${storeId}/billboards/${billboardId}`, {
-          label: formData.label,
-          imageUrl: formData.imageUrl
+        await axios.patch(`/api/${storeId}/categories/${categoryId}`, {
+          name: formData.name,
+          billboardId: formData.billboardId
         })
       } else {
-        await axios.post(`/api/${storeId}/billboards`, {
-          label: formData.label,
-          imageUrl: formData.imageUrl
+        await axios.post(`/api/${storeId}/categories`, {
+          name: formData.name,
+          billboardId: formData.billboardId
         })
       }
 
       router.refresh()
-      router.push(`/${storeId}/billboards`)
+      router.push(`/${storeId}/categories`)
       toast.success(toastMessage)
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
@@ -129,39 +136,54 @@ export function BillboardForm(props: BillboardFormsProps) {
           onSubmit={form.handleSubmit(onSubmit)}
           className='space-y-8 w-full'
         >
-          <FormField
-            control={form.control}
-            name='imageUrl'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Background Image</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    value={field.value ? [field.value] : []}
-                    onChange={(imageUrl) => field.onChange(imageUrl)}
-                    onRemove={() => field.onChange('')}
-                    disabled={isSubmiting}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <div className='grid grid-cols-3 gap-8'>
             <FormField
               control={form.control}
-              name='label'
+              name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isSubmiting}
-                      placeholder='Billboard label'
+                      placeholder='Category name'
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='billboardId'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Billboard</FormLabel>
+                  <Select
+                    disabled={isSubmiting}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder='Select a billboard'
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {billboards.map((billboard) => {
+                        return (
+                          <SelectItem key={billboard.id} value={billboard.id}>
+                            {billboard.label}
+                          </SelectItem>
+                        )
+                      })}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -178,7 +200,7 @@ export function BillboardForm(props: BillboardFormsProps) {
       <AlertModal
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
-        onConfirm={deleteBillboard}
+        onConfirm={deleteCategory}
         isLoading={isDeleting}
       />
     </>
