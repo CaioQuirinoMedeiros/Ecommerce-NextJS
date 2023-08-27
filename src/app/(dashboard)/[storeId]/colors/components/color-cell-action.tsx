@@ -17,39 +17,39 @@ import { Button } from '@/components/ui/button'
 import { handleAxiosError } from '@/utils/handleAxiosError'
 import { AlertModal } from '@/components/modals/alert-modal'
 
-import { SizeItem } from './sizes-columns'
+import { ColorItem } from './colors-columns'
 
-interface SizeCellActionProps {
-  data: SizeItem
+interface ColorCellActionProps {
+  data: ColorItem
 }
 
-export function SizeCellAction(props: SizeCellActionProps) {
+export function ColorCellAction(props: ColorCellActionProps) {
   const { data } = props
 
   const router = useRouter()
   const params = useParams()
 
   const storeId = params.storeId
-  const sizeId = data.id
+  const colorId = data.id
 
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [isAlertOpen, setIsAlertOpen] = React.useState(false)
 
   function handleCopyId() {
-    navigator.clipboard.writeText(sizeId)
-    toast.success('Size ID copied to clipboard.')
+    navigator.clipboard.writeText(colorId)
+    toast.success('Color ID copied to clipboard.')
   }
 
   function handleUpdate() {
-    router.push(`/${storeId}/sizes/${sizeId}`)
+    router.push(`/${storeId}/colors/${colorId}`)
   }
 
-  async function deleteSize() {
+  async function deleteColor() {
     try {
       setIsDeleting(true)
-      await axios.delete(`/api/${storeId}/sizes/${sizeId}`)
+      await axios.delete(`/api/${storeId}/colors/${colorId}`)
       router.refresh()
-      toast.success('Size deleted')
+      toast.success('Color deleted')
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
     } finally {
@@ -91,7 +91,7 @@ export function SizeCellAction(props: SizeCellActionProps) {
         isLoading={isDeleting}
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
-        onConfirm={deleteSize}
+        onConfirm={deleteColor}
       />
     </>
   )

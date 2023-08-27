@@ -43,7 +43,7 @@ export function ApiAlert(props: ApiAlertProps) {
           {variantTextMap[variant]}
         </Badge>
       </AlertTitle>
-      <AlertDescription className='mt-4 flex items-center justify-between'>
+      <AlertDescription className='mt-4 flex items-center justify-between gap-4'>
         <code className='relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'>
           {description}
         </code>

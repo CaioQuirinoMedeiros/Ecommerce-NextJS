@@ -6,19 +6,20 @@ import { AppError } from '@/errors/app-error'
 import { handleRouteError } from '@/utils/handleRouteError'
 import { prismadb } from '@/lib/prismadb'
 
-interface SizesRouteProps {
+interface ColorsRouteProps {
   params: { storeId: string }
   searchParams?: Record<string, string>
 }
 
-const createSizeBodySchema = z.object({
+const createColorBodySchema = z.object({
   name: z.string(),
-  value: z.string().regex(/^#(?:[0-9a-fA-F]{3}){1,2}$/, {
-    message: 'Color value must be a valid hex code'
-  })
+  value: z.string()
 })
 
-export async function POST(request: NextRequest, { params }: SizesRouteProps) {
+export async function POST(
+  request: NextRequest,
+  { params }: ColorsRouteProps
+) {
   try {
     const { userId } = auth()
 
@@ -35,9 +36,9 @@ export async function POST(request: NextRequest, { params }: SizesRouteProps) {
 
     const body = await request.json()
 
-    const { name, value } = createSizeBodySchema.parse(body)
+    const { name, value } = createColorBodySchema.parse(body)
 
-    const size = await prismadb.size.create({
+    const color = await prismadb.color.create({
       data: {
         name: name,
         value: value,
@@ -45,19 +46,22 @@ export async function POST(request: NextRequest, { params }: SizesRouteProps) {
       }
     })
 
-    return NextResponse.json({ size }, { status: 201 })
+    return NextResponse.json({ color }, { status: 201 })
   } catch (error: any) {
     return handleRouteError(error)
   }
 }
 
-export async function GET(_request: NextRequest, { params }: SizesRouteProps) {
+export async function GET(
+  _request: NextRequest,
+  { params }: ColorsRouteProps
+) {
   try {
-    const sizes = await prismadb.size.findMany({
+    const colors = await prismadb.color.findMany({
       where: { storeId: params.storeId }
     })
 
-    return NextResponse.json({ sizes })
+    return NextResponse.json({ colors })
   } catch (error: any) {
     return handleRouteError(error)
   }

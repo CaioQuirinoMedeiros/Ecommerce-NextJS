@@ -6,34 +6,38 @@ import { AppError } from '@/errors/app-error'
 import { prismadb } from '@/lib/prismadb'
 import { handleRouteError } from '@/utils/handleRouteError'
 
-interface SizeRouteProps {
+interface ColorRouteProps {
   params: {
     storeId: string
-    sizeId: string
+    colorId: string
   }
   searchParams?: Record<string, string>
 }
 
-const updateSizeBodySchema = z.object({
+const updateColorBodySchema = z.object({
   name: z.string(),
-  value: z.string().regex(/^#(?:[0-9a-fA-F]{3}){1,2}$/, {
-    message: 'Color value must be a valid hex code'
-  })
+  value: z.string()
 })
 
-export async function GET(_request: NextRequest, { params }: SizeRouteProps) {
+export async function GET(
+  _request: NextRequest,
+  { params }: ColorRouteProps
+) {
   try {
-    const size = await prismadb.size.findUniqueOrThrow({
-      where: { id: params.sizeId }
+    const color = await prismadb.color.findUniqueOrThrow({
+      where: { id: params.colorId }
     })
 
-    return NextResponse.json({ size })
+    return NextResponse.json({ color })
   } catch (error: any) {
     return handleRouteError(error)
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: SizeRouteProps) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: ColorRouteProps
+) {
   try {
     const { userId } = auth()
 
@@ -47,11 +51,11 @@ export async function PATCH(request: NextRequest, { params }: SizeRouteProps) {
 
     const body = await request.json()
 
-    const { name, value } = updateSizeBodySchema.parse(body)
+    const { name, value } = updateColorBodySchema.parse(body)
 
-    const size = await prismadb.size.update({
+    const color = await prismadb.color.update({
       where: {
-        id: params.sizeId
+        id: params.colorId
       },
       data: {
         name: name,
@@ -59,7 +63,7 @@ export async function PATCH(request: NextRequest, { params }: SizeRouteProps) {
       }
     })
 
-    return NextResponse.json({ size })
+    return NextResponse.json({ color })
   } catch (error: any) {
     return handleRouteError(error)
   }
@@ -67,7 +71,7 @@ export async function PATCH(request: NextRequest, { params }: SizeRouteProps) {
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: SizeRouteProps
+  { params }: ColorRouteProps
 ) {
   try {
     const { userId } = auth()
@@ -80,11 +84,11 @@ export async function DELETE(
       where: { id: params.storeId, userId: userId }
     })
 
-    const size = await prismadb.size.delete({
-      where: { id: params.sizeId }
+    const color = await prismadb.color.delete({
+      where: { id: params.colorId }
     })
 
-    return NextResponse.json({ size })
+    return NextResponse.json({ color })
   } catch (error: any) {
     return handleRouteError(error)
   }
