@@ -2,18 +2,20 @@
 
 import { PlusIcon } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import { Billboard } from '@prisma/client'
 
 import { Button } from '@/components/ui/button'
 import { Heading } from '@/components/ui/heading'
 import { Separator } from '@/components/ui/separator'
+import { DataTable } from '@/components/ui/data-table'
+
+import { BillboardItem, billboardsColumns } from './billboards-columns'
 
 interface BillboardsClientProps {
-  billboards: Billboard[]
+  billboardsItems: BillboardItem[]
 }
 
 export function BillboardsClient(props: BillboardsClientProps) {
-  const { billboards } = props
+  const { billboardsItems } = props
 
   const router = useRouter()
   const params = useParams()
@@ -26,7 +28,7 @@ export function BillboardsClient(props: BillboardsClientProps) {
     <>
       <div className='flex items-center justify-between'>
         <Heading
-          title={`Billboards (${billboards.length})`}
+          title={`Billboards (${billboardsItems.length})`}
           description='Manage billboards for your store'
         />
 
@@ -38,9 +40,11 @@ export function BillboardsClient(props: BillboardsClientProps) {
 
       <Separator />
 
-      {billboards.map((billboard) => {
-        return <div key={billboard.id}>{billboard.id}</div>
-      })}
+      <DataTable
+        data={billboardsItems}
+        columns={billboardsColumns}
+        searchKey='label'
+      />
     </>
   )
 }

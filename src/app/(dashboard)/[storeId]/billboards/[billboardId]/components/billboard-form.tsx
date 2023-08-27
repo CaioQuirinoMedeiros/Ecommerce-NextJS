@@ -32,7 +32,7 @@ interface BillboardFormsProps {
 
 const storeFormSchema = z.object({
   label: z.string().min(1),
-  imageUrl: z.string().min(1)
+  imageUrl: z.string().min(1, { message: 'You should upload an image' })
 })
 
 type StoreFormData = z.input<typeof storeFormSchema>
@@ -62,12 +62,12 @@ export function BillboardForm(props: BillboardFormsProps) {
   const toastMessage = initialData ? 'Billboard updated.' : 'Billboard created.'
   const action = initialData ? 'Save changes' : 'Create'
 
-  async function deleteStore() {
+  async function deleteBillboard() {
     try {
       setIsDeleting(true)
       await axios.delete(`/api/${storeId}/billboards/${billboardId}`)
       router.refresh()
-      router.push('/')
+      router.push(`/${storeId}/billboards`)
       toast.success('Billboard deleted')
     } catch (error: any) {
       toast.error(handleAxiosError(error).message)
@@ -79,8 +79,6 @@ export function BillboardForm(props: BillboardFormsProps) {
   function handleRemoveStore() {
     setIsAlertOpen(true)
   }
-
-  console.log('OIE')
 
   async function onSubmit(formData: StoreFormData) {
     try {
@@ -180,7 +178,7 @@ export function BillboardForm(props: BillboardFormsProps) {
       <AlertModal
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
-        onConfirm={deleteStore}
+        onConfirm={deleteBillboard}
         isLoading={isDeleting}
       />
     </>
