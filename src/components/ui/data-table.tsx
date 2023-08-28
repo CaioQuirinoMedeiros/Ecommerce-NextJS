@@ -11,7 +11,6 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -21,6 +20,8 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+
+import { DataTablePagination } from './data-table-pagination'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -44,6 +45,9 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    initialState: {
+      pagination: { pageSize: 10 }
+    },
     state: {
       columnFilters
     }
@@ -116,23 +120,8 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className='flex items-center justify-end space-x-2 py-4'>
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className='mt-4'>
+        <DataTablePagination table={table} />
       </div>
     </div>
   )
