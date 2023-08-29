@@ -3,7 +3,7 @@
 import { cn } from '@/utils/styles'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Category } from '../../types'
+import { Category } from '@/types'
 
 interface MainNavProps {
   data: Category[]
@@ -16,7 +16,7 @@ export function MainNav(props: MainNavProps) {
 
   const routes = data.map((route) => {
     return {
-      href: `/category/${route.id}`,
+      href: `/categories/${route.id}`,
       label: route.name
     }
   })
