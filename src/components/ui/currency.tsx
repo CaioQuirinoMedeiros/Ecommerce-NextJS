@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from "react"
 import { formatCurrency } from '@/utils/formatCurrency'
 
 interface CurrencyProps {
@@ -8,6 +9,14 @@ interface CurrencyProps {
 
 export function Currency(props: CurrencyProps) {
   const { value } = props
+
+  const [isMounted, setIsMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) return null
 
   return <div className='font-semibold'>{formatCurrency(Number(value))}</div>
 }
