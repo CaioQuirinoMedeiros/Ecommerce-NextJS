@@ -21,7 +21,7 @@ export interface Product {
   images: Image[]
 }
 
-interface Image {
+export interface Image {
   id: string
   url: string
 }

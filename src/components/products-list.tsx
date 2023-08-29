@@ -1,6 +1,6 @@
 'use client'
 
-import { Product } from '../../types'
+import { Product } from '@/types'
 import { NoResults } from './ui/no-results'
 import { ProductCard } from './ui/product-card'
 
