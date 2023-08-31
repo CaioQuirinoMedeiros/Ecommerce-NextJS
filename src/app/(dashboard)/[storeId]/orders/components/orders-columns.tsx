@@ -2,6 +2,8 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 
+import { OrderCellAction } from './order-cell-action'
+
 export type OrderItem = {
   id: string
   phone: string
@@ -32,5 +34,9 @@ export const ordersColumns: ColumnDef<OrderItem>[] = [
   {
     accessorKey: 'isPaid',
     header: 'Paid'
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => <OrderCellAction data={row.original} />
   }
 ]

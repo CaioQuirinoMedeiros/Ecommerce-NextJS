@@ -25,7 +25,8 @@ export async function GET(
 ) {
   try {
     const category = await prismadb.category.findUniqueOrThrow({
-      where: { id: params.categoryId }
+      where: { id: params.categoryId },
+      include: { billboard: true }
     })
 
     return NextResponse.json({ category })

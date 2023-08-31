@@ -27,12 +27,6 @@ export default async function ProductPage(props: ProductPageProps) {
     where: { storeId: params.storeId }
   })
 
-  console.log({
-    price: product?.price,
-    typeof: typeof product?.price,
-    typeofF: typeof product?.price?.toNumber
-  })
-
   return (
     <div className='flex-col'>
       <div className='flex-1 space-y-4 p-8 py-6'>

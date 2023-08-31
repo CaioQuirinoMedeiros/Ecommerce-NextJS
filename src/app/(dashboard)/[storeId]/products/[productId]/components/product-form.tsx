@@ -58,12 +58,6 @@ type ProductFormData = z.input<typeof productFormSchema>
 export function ProductForm(props: ProductFormsProps) {
   const { initialData, categories, sizes, colors } = props
 
-  console.log({
-    price: initialData?.price,
-    typeof: typeof initialData?.price,
-    typeofF: typeof initialData?.price?.toNumber
-  })
-
   const params = useParams()
   const router = useRouter()
   const form = useForm<ProductFormData>({
