@@ -36,7 +36,7 @@ export function Summary() {
       }
     )
 
-    window.location = response.data.url
+    window.location = response.data.sessionUrl
   }
 
   return (
