@@ -14,13 +14,13 @@ export function Summary() {
   const removeAll = useCart((state) => state.removeAll)
 
   React.useEffect(() => {
-    if (searchParams.get("success")) {
-      toast.success("Payment completed.")
+    if (searchParams.get('success')) {
+      toast.success('Payment completed.')
       removeAll()
     }
 
-    if (searchParams.get("canceled")) {
-      toast.error("Something went wrong.")
+    if (searchParams.get('canceled')) {
+      toast.error('Something went wrong.')
     }
   }, [searchParams, removeAll])
 
@@ -51,7 +51,11 @@ export function Summary() {
         </div>
       </div>
 
-      <Button className='w-full mt-6' onClick={handleCheckout}>
+      <Button
+        disabled={!items.length}
+        className='w-full mt-6'
+        onClick={handleCheckout}
+      >
         Checkout
       </Button>
     </div>
